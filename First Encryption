@@ -1,0 +1,216 @@
+text = ""
+alphabets = list(map(chr, range(65, 91)))
+keyLeft = "TWXLPRDZMNUGSAQKJHEBCIFYVO"
+keyRight = "ALZBHGUWIEFJCDYNMQRVKPTOXS"
+i = 0
+key = ""
+decipheredText = []
+cipheredText = []
+cipher = 0
+
+def convertLetters():
+    global text
+    textWithNoSpace = ''.join(b for b in text if b.isalnum())
+    text = textWithNoSpace.lower()
+    text = text.translate(str.maketrans("àáâãäçèéêëïüûô","aaaaaceeeeiuuo"))
+    text = list(text.upper())
+    text =''.join(c for c in text)
+    return text
+
+def generateKey():
+    global alphabets
+    global key
+    import random
+    random.shuffle(alphabets)
+    key = ''.join(c for c in alphabets)
+    return key
+
+def keyOk():
+    global key
+    count = 0
+    generateKey()
+    for a in range (65,91):
+       if key.count(chr(a)) == 1:
+           count = count + 1
+    if count == 26:
+        return True
+    else:
+        return False
+
+def generatedLeftKey():
+    global key
+    global keyLeft
+    generateKey()
+    if keyOk() == True:
+      keyLeft = key
+      return keyLeft
+
+def generatedRightKey():
+    global key
+    global keyRight
+    generateKey()
+    if keyOk() == True:
+      keyRight = key
+      return keyRight
+
+def shiftLeft():
+   global i
+   global keyLeft
+   global cipher
+   global text
+   if cipher == False :
+     convertLetters()
+     arrayOfLeftKey = list(keyLeft)
+     for d in range(len(text)):
+        for e in range(len(arrayOfLeftKey)):
+            if text[d] == arrayOfLeftKey[e]:
+              i = e
+        break
+     f = slice(i,26,1)
+     newArrayOfLeftKey0 = arrayOfLeftKey[f]
+     for x in newArrayOfLeftKey0:
+         arrayOfLeftKey.remove(x)
+
+     arrayOfLeftKey =  newArrayOfLeftKey0+ arrayOfLeftKey
+     savePoint = arrayOfLeftKey[1]
+     g = slice (2,14)
+     newArrayOfLeftKey1 = arrayOfLeftKey[g]
+     arrayOfLeftKey[1:12] = newArrayOfLeftKey1
+     del(arrayOfLeftKey[13:15])
+     arrayOfLeftKey.insert(13, savePoint)
+     keyLeft = ''.join(arrayOfLeftKey)
+
+   if cipher == True:
+       cipheredText.append(keyLeft[i])
+       arrayOfLeftKey = list(keyLeft)
+       f = slice(i, 26, 1)
+       newArrayOfLeftKey0 = arrayOfLeftKey[f]
+       for x in newArrayOfLeftKey0:
+           arrayOfLeftKey.remove(x)
+
+       arrayOfLeftKey = newArrayOfLeftKey0 + arrayOfLeftKey
+       savePoint = arrayOfLeftKey[1]
+       g = slice(2, 14)
+       newArrayOfLeftKey1 = arrayOfLeftKey[g]
+       arrayOfLeftKey[1:12] = newArrayOfLeftKey1
+       del (arrayOfLeftKey[13:15])
+       arrayOfLeftKey.insert(13, savePoint)
+       keyLeft = ''.join(arrayOfLeftKey)
+
+
+def shiftRight():
+    global i
+    global keyRight
+    global decipheredText
+    global cipher
+    global text
+    if cipher == False:
+      decipheredText.append(keyRight[i])
+      arrayofRightKey = list(keyRight)
+      h = slice(i+1,26,1)
+      newArrayofRightKey0 = arrayofRightKey[h]
+      for x in newArrayofRightKey0:
+          arrayofRightKey.remove(x)
+
+      arrayofRightKey = newArrayofRightKey0 + arrayofRightKey
+      savePoint = arrayofRightKey[2]
+      k = slice (3,14)
+      newArrayofRightKey1 = arrayofRightKey[k]
+      arrayofRightKey[2:12] = newArrayofRightKey1
+      del(arrayofRightKey[13:15])
+      arrayofRightKey.insert(13,savePoint)
+      keyRight = ''.join(arrayofRightKey)
+        
+    if cipher == True:
+        arrayofRightKey = list(keyRight)
+        for d in range(len(text)):
+            for e in range (len(arrayofRightKey)):
+                if text[d] == arrayofRightKey[e]:
+                    i = e
+            break
+
+        h = slice(i + 1, 26, 1)
+        newArrayofRightKey0 = arrayofRightKey[h]
+        for x in newArrayofRightKey0:
+            arrayofRightKey.remove(x)
+
+        arrayofRightKey = newArrayofRightKey0 + arrayofRightKey
+        savePoint = arrayofRightKey[2]
+        k = slice(3, 14)
+        newArrayofRightKey1 = arrayofRightKey[k]
+        arrayofRightKey[2:12] = newArrayofRightKey1
+        del (arrayofRightKey[13:15])
+        arrayofRightKey.insert(13, savePoint)
+        keyRight = ''.join(arrayofRightKey)
+
+def algorithm():
+    global text
+    global i
+    global keyLeft
+    global keyRight
+    global decipheredText
+    global cipher
+    global cipheredText
+    WhattoDo = input("Do you want to cipher or decipher a text? : ")
+    WhattoDo = WhattoDo.lower()
+
+    if WhattoDo == "cipher":
+        cipher = True
+
+    if WhattoDo == "decipher":
+        cipher = False
+
+
+    if cipher == False:
+      text = input("Put the text to decipher here: ")
+      z = 0
+      convertLetters()
+      shiftLeft()
+      shiftRight()
+      text = list(text)
+      del (text[0])
+      while len(text) > 0 :
+          convertLetters()
+          shiftLeft()
+          shiftRight()
+          text = list(text)
+          del (text[z])
+      decipheredText = ''.join(decipheredText)
+      print("Your deciphered text is: " + decipheredText)
+
+    if cipher == True:
+        text = input("Put the text to cipher here: ")
+        z = 0
+        convertLetters()
+        generatedRightKey()
+        generatedLeftKey()
+        print("The rightKey is: " + keyRight)
+        print("The leftKey is: " + keyLeft)
+        shiftRight()
+        shiftLeft()
+        text = list(text)
+        del (text[0])
+        while len(text) > 0:
+            convertLetters()
+            shiftRight()
+            shiftLeft()
+            text = list(text)
+            del (text[z])
+        cipheredText = ''.join(cipheredText)
+        print("Your ciphered text is: " + cipheredText)
+
+algorithm();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
