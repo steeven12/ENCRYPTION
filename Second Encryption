@@ -1,0 +1,394 @@
+n = 0
+offset = 0
+text = ""
+l = 0
+coordinates = []
+dictionary = {}
+cipher = 0
+display = 0
+
+def convertLetters(text):
+    textWithNoSpace = ''.join(b for b in text if b.isalnum())
+    text = textWithNoSpace.lower()
+    text = text.translate(str.maketrans("àáâãäçèéêëïüûô","aaaaaceeeeiuuo"))
+    text = list(text.upper())
+    text =''.join(c for c in text)
+    return text
+
+
+def KeyOk(n,offset):
+    if (n > 2 and 0 <= offset <= (2*n + 3)):
+         return True
+
+    else:
+          return False
+
+
+def computeCoordinates(n,l,offset,text):
+    global coordinates
+    if (offset == 0):
+          i = -1
+          increase = 1
+          while l > 0:
+              for j in range(l):
+                if i == 0:
+                    increase = 1
+                elif i == n - 1:
+                    increase = -1
+                i = i + increase
+                l = l - 1
+                coordinates.append((i,j))
+
+          return coordinates
+
+
+    if (offset < n and offset != 0):
+          i = offset
+          increase = 1
+          while l > 0:
+
+              for j in range (l):
+                  if (0 < i <= n-1):
+                      coordinates.append((i,j))
+                      i = i + 1
+                  else:
+                      i = n-1
+                      for a in range(j ,l):
+                          if i == 0:
+                              increase = 1
+                          elif i == n-1:
+                              increase = -1
+                          i = i + increase
+                          l = l - 1
+                          coordinates.append((i, a))
+              l = l - 1
+          newCoordinates= coordinates[0:len(text)]
+          coordinates = newCoordinates
+          return coordinates
+
+    if (offset > n):
+          i = 2*n-(offset+2)
+          increase = 1
+          while l > 0:
+
+              for j in range(l):
+                  if (i>=0):
+                      coordinates.append((i, j))
+                      i = i - 1
+                  else:
+                      i = 0
+                      for a in range(j, l):
+                          if i == 0:
+                              increase = 1
+                          elif i == n - 1:
+                              increase = -1
+                          i = i + increase
+                          l = l - 1
+                          coordinates.append((i, a))
+              l = l - 1
+          newCoordinates = coordinates[0:len(text)]
+          coordinates = newCoordinates
+          return coordinates
+
+def init(n,l,coordinates):
+    global dictionary
+    computeCoordinates(n,l,offset,text)
+    y = ''
+    dictionary = dict.fromkeys(coordinates,y)
+
+def fullDictionaryCipher(text,l,coordinates,dictionary):
+    init(n,l,coordinates)
+    textList = list(text)
+    for i in  range (len(text)):
+        dictionary[coordinates[i]] = textList[i]
+    return dictionary
+
+def fullDictionaryDecipher(text,n,l,coordinates,dictionary):
+    init(n,l,coordinates)
+    textList = list(text)
+    for i in range (l):
+        dictionary[coordinates[i]] = textList[i]
+    return dictionary
+
+def displayDictionary(n,l,text,offset,coordinates,dictionary):
+    string = []
+    p = 0
+    l = len(text)
+    a = [[" " for x in range(l)] for y in range(l)]
+    if offset == 0:
+        row = offset
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == n-1:
+                down = False
+            elif row == 0:
+                down = True
+            if down == True:
+                row = row + 1
+            else :
+                row = row - 1
+
+        for i in range(n):
+            for j in range(l):
+                print(str(a[i][j]), end = " ")
+            print()
+
+
+    if (offset < n and offset != 0):
+        row = offset
+        increase = 1
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == 0:
+                increase = 1
+            elif row == n-1:
+                increase = -1
+
+            row = row + increase
+
+
+        for i in range(n):
+            for j in range(l):
+                print(str(a[i][j]), end=" ")
+            print()
+
+
+    if (offset > n):
+        row = 2*n-(offset+2)
+        increase = 1
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == 0:
+                increase = -1
+            elif row == n - 1:
+                increase = 1
+
+            row = row - increase
+
+        for i in range(n):
+            for j in range(l):
+                print(str(a[i][j]), end=" ")
+            print()
+
+
+
+
+
+def dictionaryToStringCipher(n,l,text,offset,coordinates,dictionary):
+    string = []
+    p = 0
+    l = len(text)
+    a = [[" " for x in range(l)] for y in range(l)]
+    if offset == 0:
+        row = offset
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == n - 1:
+                down = False
+            elif row == 0:
+                down = True
+            if down == True:
+                row = row + 1
+            else:
+                row = row - 1
+
+        for i in range(n):
+            for j in range(l):
+                if a[i][j] != " ":
+                    string.append(a[i][j])
+
+        string = ''.join(string)
+        print("Your ciphered text is: "+ string)
+
+    if (offset < n and offset != 0):
+        row = offset
+        increase = 1
+        for i in range(l):
+                a[row][i] = text[i]
+                if row == 0:
+                    increase = 1
+                elif row == n - 1:
+                    increase = -1
+
+                row = row + increase
+
+        for i in range(n):
+                for j in range(l):
+                    if a[i][j] != " ":
+                        string.append(a[i][j])
+
+        string = ''.join(string)
+        print("Your ciphered text is: " + string)
+
+    if (offset > n):
+        row = 2 * n - (offset + 2)
+        increase = 1
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == 0:
+                increase = -1
+            elif row == n - 1:
+                increase = 1
+
+            row = row - increase
+
+        for i in range(n):
+            for j in range(l):
+                if a[i][j] != " ":
+                    string.append(a[i][j])
+
+        string = ''.join(string)
+        print("Your ciphered text is: " + string)
+
+def dictionaryToString(n,l,coordinates,dictionary,cipher,text,offset):
+    string = []
+    p = 0
+    l = len(text)
+    a = [[" " for x in range(l)] for y in range(l)]
+    if offset == 0:
+        row = offset
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == n - 1:
+                down = False
+            elif row == 0:
+                down = True
+            if down == True:
+                row = row + 1
+            else:
+                row = row - 1
+
+        for i in range(n):
+            for j in range(l):
+                if a[i][j] != " ":
+                    a[i][j] = text[p]
+                    p = p + 1
+
+        row = offset
+        for i in range(l):
+            if a[row][i] != " ":
+                string.append(a[row][i])
+                if row == n - 1:
+                    down = False
+                elif row == 0:
+                    down = True
+                if down == True:
+                    row = row + 1
+                else:
+                    row = row - 1
+
+        string = ''.join(string)
+        print("Your deciphered text is: " + string)
+
+    if (offset < n and offset != 0):
+        row = offset
+        increase = 1
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == 0:
+                increase = 1
+            elif row == n - 1:
+                increase = -1
+
+            row = row + increase
+
+
+        for i in range(n):
+            for j in range(l):
+                if a[i][j] != " ":
+                    a[i][j] = text[p]
+                    p = p + 1
+
+        row = offset
+        increase = 1
+        for i in range(l):
+            if a[row][i] != " ":
+                string.append(a[row][i])
+                if row == 0:
+                    increase = 1
+                elif row == n - 1:
+                    increase = -1
+
+                row = row + increase
+
+        string = ''.join(string)
+        print("Your deciphered text is: " + string)
+
+
+
+    if (offset > n):
+        row = 2 * n - (offset + 2)
+        increase = 1
+        for i in range(l):
+            a[row][i] = text[i]
+            if row == 0:
+                increase = -1
+            elif row == n - 1:
+                increase = 1
+
+            row = row - increase
+
+        for i in range(n):
+            for j in range(l):
+                if a[i][j] != " ":
+                    a[i][j] = text[p]
+                    p = p + 1
+
+        row = 2 * n - (offset + 2)
+        increase = 1
+        for i in range(l):
+            if a[row][i] != " ":
+                string.append(a[row][i])
+                if row == 0:
+                    increase = -1
+                elif row == n - 1:
+                    increase = 1
+
+                row = row - increase
+
+        string = ''.join(string)
+        print("Your deciphered text is: " + string)
+
+
+def algorithm2(text,n,offset,cipher,display):
+    WhattoDo = input("Do you want to cipher or decipher a text? : ")
+    WhattoDo = WhattoDo.lower()
+
+    if WhattoDo == "cipher":
+        cipher = True
+
+    if WhattoDo == "decipher":
+        cipher = False
+
+    if cipher == True:
+        text = convertLetters(input("Put the text here to cipher here: "))
+        l = len(text)
+        n = eval(input("Put the number of row here: "))
+        offset = eval(input("Put the number of offset here: "))
+        KeyOk(n,offset)
+        if(KeyOk(n,offset) == True):
+            computeCoordinates(n, l, offset,text)
+            fullDictionaryCipher(text, l, coordinates, dictionary)
+            displayDictionary(n, l, text, offset,coordinates,dictionary)
+            dictionaryToStringCipher(n, l, text, offset,coordinates,dictionary)
+
+
+        else:
+            print("Put the correct row or offset value")
+
+    if cipher == False:
+        text = convertLetters(input("Put the text here to decipher here: "))
+        l = len(text)
+        n = eval(input("Put the number of row here: "))
+        offset = eval(input("Put the number of offset here: "))
+        KeyOk(n, offset)
+        if (KeyOk(n, offset) == True):
+            computeCoordinates(n, l, offset,text)
+            dictionaryToString(n, l, coordinates, dictionary, cipher, text, offset)
+
+        else:
+            print("Put the correct row or offset value")
+
+
+algorithm2(text,n,offset,cipher,display);
+
